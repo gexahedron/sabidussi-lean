@@ -1,4 +1,5 @@
 import Sabidussi.Color
+import Sabidussi.Statement
 import Mathlib.Data.Fin.Rev
 import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Data.Finset.Card
@@ -17,58 +18,13 @@ namespace Sabidussi
 
 open scoped BigOperators
 
-/-- A finite labelled endpoint multigraph.  Parallel edges and loops are allowed. -/
-structure LoopMultigraph (V E : Type*) [Fintype V] [Fintype E] where
-  endAt : E → Fin 2 → V
-
 namespace LoopMultigraph
 
-variable {V E : Type*} [Fintype V] [Fintype E] [DecidableEq V]
-
-/-- A labelled edge together with one of its two numbered ends. -/
-abbrev HalfEdge (E : Type*) := E × Fin 2
-
-/-- The endpoint vertex of a half-edge. -/
-def vertex (G : LoopMultigraph V E) (h : HalfEdge E) : V := G.endAt h.1 h.2
-
-/-- Half-edges incident with a vertex.  A loop contributes both of its numbered ends. -/
-def halfEdgesAt (G : LoopMultigraph V E) (v : V) :=
-  {h : HalfEdge E // G.vertex h = v}
-
-instance (G : LoopMultigraph V E) (v : V) : Fintype (G.halfEdgesAt v) :=
-  Subtype.fintype fun h : HalfEdge E ↦ G.vertex h = v
-
-/-- Degree counted in half-edge incidences. -/
-def degree (G : LoopMultigraph V E) (v : V) : ℕ :=
-  Fintype.card (G.halfEdgesAt v)
-
 variable {V E : Type*} [Fintype V] [Fintype E]
-
-/-- A nonempty closed Euler tour using every labelled edge exactly once. -/
-structure EulerTour (G : LoopMultigraph V E) where
-  /-- The edge positions are `Fin (n + 1)`. -/
-  n : ℕ
-  /-- Every edge object occurs at exactly one position. -/
-  edge : Fin (n + 1) ≃ E
-  /-- The end from which the edge at a position is traversed. -/
-  depart : Fin (n + 1) → Fin 2
-  /-- The arrival end at a position is the departure vertex at the next position. -/
-  continuous : ∀ i,
-    G.endAt (edge i) (Fin.rev (depart i)) =
-      G.endAt (edge (finRotate (n + 1) i)) (depart (finRotate (n + 1) i))
 
 namespace EulerTour
 
 variable [DecidableEq V] {G : LoopMultigraph V E} (T : G.EulerTour)
-
-/-- Positions in the cyclic edge word. -/
-abbrev Pos := Fin (T.n + 1)
-
-/-- The next edge position. -/
-def next (i : T.Pos) : T.Pos := finRotate (T.n + 1) i
-
-/-- The previous edge position. -/
-def prev (i : T.Pos) : T.Pos := (finRotate (T.n + 1)).symm i
 
 /-- The vertex of the transition from the previous edge into edge `i`. -/
 def vertexAt (i : T.Pos) : V := G.endAt (T.edge i) (T.depart i)
@@ -197,10 +153,6 @@ def edgeIncidence (v : V) (e : E) : F₂ :=
 def IsEvenEdgeSet (F : Finset E) : Prop :=
   ∀ v : V, ∑ e ∈ F, G.edgeIncidence v e = 0
 
-/-- The ordinary natural-number degree of `v` in an edge set.  Edge ends are counted, so this
-definition also has the standard behavior for multigraphs. -/
-def degreeIn (F : Finset E) (v : V) : ℕ :=
-  ((F ×ˢ (Finset.univ : Finset (Fin 2))).filter fun h ↦ G.endAt h.1 h.2 = v).card
 /-- A (multigraph) cycle is a nonempty inclusion-minimal even edge set.
 
 This includes singleton loops and pairs of parallel non-loop edges. -/

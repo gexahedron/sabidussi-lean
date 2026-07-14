@@ -20,31 +20,6 @@ open scoped BigOperators
 variable {V E : Type*} [Fintype V] [Fintype E] [DecidableEq V] [DecidableEq E]
   (G : LoopMultigraph V E)
 
-/-- Two labelled edges meet if some numbered end of one has the same endpoint as some numbered
-end of the other.  An edge meets itself, and parallel edges meet at both endpoints. -/
-def EdgeAdjacent (e f : E) : Prop :=
-  ∃ i j : Fin 2, G.endAt e i = G.endAt f j
-
-/-- Edge-chain connectivity of a nonempty edge-supported subgraph.  This is a direct
-graph-theoretic definition, independent of parity and of the `Cycle` definition. -/
-def EdgeConnected (F : Finset E) : Prop :=
-  ∃ root ∈ F, ∀ e ∈ F,
-    Relation.ReflTransGen
-      (fun x y : E ↦ x ∈ F ∧ y ∈ F ∧ G.EdgeAdjacent x y) root e
-
-/-- The vertices incident with at least one edge of `F`. -/
-def edgeSupport (F : Finset E) : Finset V :=
-  Finset.univ.filter fun v ↦ ∃ e ∈ F, ∃ i : Fin 2, G.endAt e i = v
-
-/-- An ordinary circuit: a nonempty connected edge-supported subgraph in which every supported
-vertex has degree two.  Degrees count numbered edge ends, so a singleton loop is a circuit and
-two parallel non-loop edges form a circuit of length two. -/
-structure OrdinaryCircuit where
-  edges : Finset E
-  nonempty : edges.Nonempty
-  connected : G.EdgeConnected edges
-  twoRegular : ∀ v : V, v ∈ G.edgeSupport edges → G.degreeIn edges v = 2
-
 @[simp]
 theorem mem_edgeSupport_iff {F : Finset E} {v : V} :
     v ∈ G.edgeSupport F ↔ ∃ e ∈ F, ∃ i : Fin 2, G.endAt e i = v := by
@@ -423,17 +398,6 @@ theorem decompose_even_edge_set_ordinary (F : Finset E) (hF : G.IsEvenEdgeSet F)
   refine ⟨L.map (Cycle.toOrdinaryCircuit G), ?_⟩
   intro e
   rw [filter_map_toOrdinaryCircuit_length, hL e]
-
-/-- A partition of all labelled edges into ordinary connected 2-regular circuits. -/
-structure OrdinaryCircuitDecomposition where
-  circuits : List G.OrdinaryCircuit
-  coveredOnce : ∀ e : E, (circuits.filter fun C ↦ e ∈ C.edges).length = 1
-
-/-- Compatibility stated for ordinary circuits. -/
-def OrdinaryCircuitDecomposition.Compatible {G : LoopMultigraph V E}
-    (S : G.OrdinaryCircuitDecomposition) (T : G.EulerTour) : Prop :=
-  ∀ (i : T.Pos) (C : G.OrdinaryCircuit), C ∈ S.circuits →
-    ¬ (T.edge (T.prev i) ∈ C.edges ∧ T.edge i ∈ C.edges)
 
 /-- Transport a decomposition from the minimal-even representation to ordinary circuits. -/
 def CircuitDecomposition.toOrdinary (S : G.CircuitDecomposition) :

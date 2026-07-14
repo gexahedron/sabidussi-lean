@@ -9,3 +9,9 @@ rev = "9a9483a92959bc92bd6a60176dd1fe597298c1f8"
 
 [[lean_lib]]
 name = "Sabidussi"
+
+[[lean_lib]]
+name = "Challenge"
+
+[[lean_lib]]
+name = "Solution"

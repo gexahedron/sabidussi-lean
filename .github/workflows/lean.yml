@@ -1,0 +1,56 @@
+name: Lean CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lean-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      # actions/checkout v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Reject proof shortcuts in production sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          rg -n '\b(sorry|admit|native_decide)\b|^[[:space:]]*(axiom|opaque|unsafe)\b' \
+            --glob '*.lean' Sabidussi.lean Sabidussi Solution.lean
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo '::error::Production Lean sources contain a forbidden declaration or proof shortcut.'
+            exit 1
+          fi
+          if [ "$status" -ne 1 ]; then
+            exit "$status"
+          fi
+
+      # leanprover/lean-action v1.5.0
+      - name: Build Lean project
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+        with:
+          build: true
+          test: false
+          lint: false
+          use-mathlib-cache: true
+
+      - name: Verify exact axiom audit
+        run: lake env lean Sabidussi/Audit.lean

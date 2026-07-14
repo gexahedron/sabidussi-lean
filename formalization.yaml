@@ -1,0 +1,186 @@
+# Schema: https://github.com/mathlib-initiative/formalization.yaml
+version: "v0.3"
+
+project:
+  name: "Sabidussi compatibility in Lean"
+  authors:
+    - "Nikolay Ulyanov"
+  license: "all-rights-reserved"
+
+sources:
+  - title: "Graph Puzzles III.1: A proof of Sabidussi's compatibility conjecture"
+    authors:
+      - "Nikolay Ulyanov"
+    id: "https://github.com/gexahedron/sabidussi-lean/blob/032e640df0cc41d4d3d217f7c68628ab19cb3767/sabidussi_proof.pdf"
+    type: "manuscript"
+    license: "all-rights-reserved"
+    author_contacted: "n/a"
+    sha256: "5d895e9af60d6fe7ca8d1c38e06adb221c3b7be91caf0908ef467f459fc25c67"
+    note: "The source author is also the formalization project author."
+
+status:
+  scope: >-
+    Lean 4 and Mathlib formalization of Theorem 1.1 (Sabidussi compatibility)
+    and the proof-driving results in Sections 2–7 of the source manuscript.
+    The model permits labelled parallel edges and loops, counts both ends of
+    a loop in vertex degree, and concludes with ordinary nonempty connected
+    2-regular circuits. The expository circuit-double-cover discussion in
+    Section 8 and the dimer/spin interpretation in Section 9 are outside the
+    formalization's scope. The sorry counts exclude the statement-only
+    Comparator challenge fixture.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms:
+    - "propext"
+    - "Classical.choice"
+    - "Quot.sound"
+  main_results:
+    - declaration: "Sabidussi.LoopMultigraph.loop_sabidussi_compatibility_ordinary"
+      file: "Sabidussi/OrdinaryCircuit.lean"
+      sorry_count: 0
+      axioms:
+        - "propext"
+        - "Classical.choice"
+        - "Quot.sound"
+      comparator_config: "comparator/sabidussi_compatibility.json"
+      literature_dependencies: []
+
+automation:
+  methods:
+    - method: "other"
+      models: []
+      framework: "not recorded"
+      tool_setup: >-
+        The repository does not contain a session transcript or tool inventory
+        identifying how the Lean formalization was produced.
+      cost:
+        wall_time: "not recorded"
+        spend_usd: "not recorded"
+        hardware: "not recorded"
+      prompting_notes: "not recorded"
+  spend_usd: "not recorded"
+  notes: >-
+    Production details for the Lean code are not recorded in repository
+    evidence. Separately, the bundled manuscript states that its mathematical
+    proof is entirely due to GPT 5.6 Pro and that its writeup was prepared
+    with Codex using GPT 5.6 Sol. That statement does not by itself establish
+    that the same tools produced the Lean code.
+
+fidelity:
+  divergences: >-
+    The public endpoint matches Theorem 1.1. Finite vertices and labelled
+    edges are represented by Fintype instances and an endpoint map
+    E → Fin 2 → V. Rather than carrying separate connectedness and even-degree
+    hypotheses, the theorem receives an explicit nonempty cyclic Euler tour;
+    together with minimum degree at least four, this represents the source's
+    finite Eulerian-graph assumptions. A circuit decomposition is represented
+    by a list of finite edge sets in which every labelled edge occurs exactly
+    once, and compatibility forbids any member from containing both the
+    previous and current tour edges.
+
+    Some proof engineering intentionally differs from the manuscript. In
+    particular, the formalization first decomposes binary-even edge sets into
+    inclusion-minimal pieces and then proves by a finite-dimensional
+    rank-nullity argument that such pieces are connected and 2-regular. The
+    manuscript instead invokes Euler's theorem and repeatedly splits closed
+    trails. Several internal Lean lemmas are strengthened or specialized to
+    Fin-indexed representations, while the final ordinary-circuit statement
+    is unchanged.
+
+    Sections 8 and 9 are not formalized. In particular, the interpretive
+    Propositions 9.1–9.3 about the conifold sign dictionary, prefix linking,
+    and balancing determinant have no Lean counterparts. Corollary 7.1's
+    four-colour certificate is constructed internally, but there is currently
+    no separate public declaration with exactly the corollary's existential
+    signature.
+
+review:
+  status: "self-assessed; agent-audited"
+  reviewers:
+    - "Nikolay Ulyanov"
+    - "OpenAI Codex (statement and fidelity audit, 2026-07-14)"
+  notes: >-
+    VERIFICATION.md records a successful full build on 2026-07-14, an empty
+    production-source scan for sorry, admit, native_decide, axiom, opaque,
+    and unsafe declarations, and exact final-theorem dependencies on propext,
+    Classical.choice, and Quot.sound. The 2026-07-14 agent audit compared the
+    bundled manuscript's principal statements with their Lean declarations.
+    These checks are not independent external mathematical peer review.
+
+alignment:
+  namespace: "Sabidussi"
+  statements:
+    - source: "Theorem 1.1 (Sabidussi)"
+      lean: "Sabidussi.LoopMultigraph.loop_sabidussi_compatibility_ordinary"
+      module: "Sabidussi.OrdinaryCircuit"
+      status: "proved"
+      note: "Public endpoint; also matches the unnumbered restatement in Section 7."
+
+    - source: "Lemma 2.1 (Even decomposition)"
+      lean: "Sabidussi.LoopMultigraph.decompose_even_edge_set_ordinary"
+      module: "Sabidussi.OrdinaryCircuit"
+      status: "proved"
+
+    - source: "Lemma 2.2 (Four-colour reduction)"
+      lean: "Sabidussi.LoopMultigraph.CompatibleFourColoring.exists_compatible_circuit_decomposition"
+      module: "Sabidussi.LoopMultigraph"
+      status: "proved"
+
+    - source: "Lemma 2.3 (Tour-incidence correspondence)"
+      lean: "Sabidussi.LoopMultigraph.EulerTour.occurrenceSideEquivHalfEdgesAt"
+      module: "Sabidussi.LoopMultigraph"
+      status: "proved"
+
+    - source: "Proposition 2.4 (Cyclic-word reduction)"
+      lean: "Sabidussi.LoopMultigraph.EulerTour.compatibleFourColoringOfWordColoring"
+      module: "Sabidussi.LoopGraphBridge"
+      status: "proved"
+
+    - source: "Lemma 3.1 (Finite polarization)"
+      lean: "Sabidussi.quadratic_sum_fin"
+      module: "Sabidussi.Parity"
+      status: "proved"
+
+    - source: "Lemma 3.2 (Four-colour moments)"
+      lean: "Sabidussi.colorFiber_card_even_of_moments"
+      module: "Sabidussi.Parity"
+      status: "proved"
+
+    - source: "Lemma 4.1 (Odd balancing)"
+      lean: "Sabidussi.OddBalance.solutions_card_odd; Sabidussi.OddBalance.exists_balanced"
+      module: "Sabidussi.OddBalance"
+      status: "proved"
+
+    - source: "Lemma 5.1 (Local patterns)"
+      lean: "Sabidussi.localDifference_ne_zero; Sabidussi.sum_localDifference_occurrences; Sabidussi.sum_localDifference_choices"
+      module: "Sabidussi.LocalPattern"
+      status: "proved"
+
+    - source: "Lemma 6.1 (Difference criterion)"
+      lean: "Sabidussi.CyclicWord.Word.prefixColor_transition; Sabidussi.CyclicWord.Word.quadratic_incident_sum_eq_zero; Sabidussi.CyclicWord.Word.incident_sum_eq_zero"
+      module: "Sabidussi.CyclicWord"
+      status: "proved-as-components"
+      note: "Its construction and moment calculations are separate declarations."
+
+    - source: "Lemma 6.2 (Interaction tables)"
+      lean: "Sabidussi.CyclicWord.Word.interaction_symm; Sabidussi.CyclicWord.Word.sum_interaction_choices"
+      module: "Sabidussi.CyclicWord"
+      status: "proved"
+
+    - source: "Lemma 6.3 (Gap colouring)"
+      lean: "Sabidussi.CyclicWord.Word.exists_coloring"
+      module: "Sabidussi.CyclicWord"
+      status: "proved"
+
+    - source: "Corollary 7.1 (Four-colour certificate)"
+      lean: "Sabidussi.LoopMultigraph.EulerTour.compatibleFourColoringOfWordColoring"
+      module: "Sabidussi.LoopGraphBridge"
+      status: "proved-as-construction"
+      note: "Used internally; no separate public existential wrapper."
+
+    - source: "Propositions 9.1–9.3 (dimer and spin interpretation)"
+      status: "not-formalized"
+      note: "Interpretive material outside the proof scope."
+
+acknowledgements: >-
+  Built on Lean 4 and Mathlib.

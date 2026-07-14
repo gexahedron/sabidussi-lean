@@ -28,7 +28,8 @@ Lake will build the required dependencies locally.
 The following source checks should produce no output:
 
 ```bash
-rg -n '\b(sorry|admit|native_decide)\b|^\s*(axiom|opaque|unsafe)\b' --glob '*.lean' .
+rg -n '\b(sorry|admit|native_decide)\b|^\s*(axiom|opaque|unsafe)\b' \
+  --glob '*.lean' Sabidussi.lean Sabidussi Solution.lean
 ```
 
 ## Source layout
