@@ -31,8 +31,9 @@ jobs:
         run: |
           set -euo pipefail
           set +e
-          rg -n '\b(sorry|admit|native_decide)\b|^[[:space:]]*(axiom|opaque|unsafe)\b' \
-            --glob '*.lean' Sabidussi.lean Sabidussi Solution.lean
+          grep -R -n -E --include='*.lean' \
+            '\b(sorry|admit|native_decide)\b|^[[:space:]]*(axiom|opaque|unsafe)\b' \
+            Sabidussi.lean Sabidussi Solution.lean
           status=$?
           set -e
           if [ "$status" -eq 0 ]; then
