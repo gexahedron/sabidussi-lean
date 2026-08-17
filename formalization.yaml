@@ -5,14 +5,21 @@ project:
   name: "Sabidussi compatibility in Lean"
   authors:
     - "Nikolay Ulyanov"
+  responsible_maintainers:
+    - "Nikolay Ulyanov"
   license: "all-rights-reserved"
 
+classification:
+  arxiv:
+    - "math.CO"
+
 sources:
-  - title: "Graph Puzzles III.1: A proof of Sabidussi's compatibility conjecture"
+  - title: "Graph Puzzles III.1: A Proof of Sabidussi's Compatibility Conjecture"
     authors:
       - "Nikolay Ulyanov"
-    id: "https://github.com/gexahedron/sabidussi-lean/blob/032e640df0cc41d4d3d217f7c68628ab19cb3767/sabidussi_proof.pdf"
-    type: "manuscript"
+    id: "https://arxiv.org/abs/2607.13225"
+    type: "paper"
+    relationship: "formalizes"
     license: "all-rights-reserved"
     author_contacted: "n/a"
     sha256: "5d895e9af60d6fe7ca8d1c38e06adb221c3b7be91caf0908ef467f459fc25c67"
