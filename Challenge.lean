@@ -3,11 +3,10 @@ import Mathlib
 /-!
 # Trusted Comparator challenge for Sabidussi compatibility
 
-This file is deliberately self-contained apart from Mathlib: Palomar compiles challenges without
-project-local modules on the import path. The declarations below mirror `Sabidussi.Statement`,
-which is the statement layer used by the proof modules. The proof placeholder is intentional:
-Comparator compares this reviewed statement to `Solution` and checks only the latter's proof
-axioms.
+This file is deliberately self-contained apart from Mathlib. The declarations below mirror
+`Sabidussi.Statement`, which is the statement layer used by the proof modules. The proof
+placeholder is intentional: Comparator compares this reviewed statement to `Solution` and checks
+only the latter's proof axioms.
 -/
 
 namespace Sabidussi
