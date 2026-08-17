@@ -10,8 +10,8 @@ project:
   license: "Apache-2.0"
 
 classification:
-  arxiv:
-    - "math.CO"
+  arxiv: [math.CO]
+  msc2020: [05C45, 05C70]
 
 sources:
   - title: "Graph Puzzles III.1: A Proof of Sabidussi's Compatibility Conjecture"
