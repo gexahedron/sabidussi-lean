@@ -7,7 +7,7 @@ project:
     - "Nikolay Ulyanov"
   responsible_maintainers:
     - "Nikolay Ulyanov"
-  license: "all-rights-reserved"
+  license: "Apache-2.0"
 
 classification:
   arxiv:
